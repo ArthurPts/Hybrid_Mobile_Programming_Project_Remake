@@ -51,7 +51,19 @@ export class AkunService {
   }
 
   register(registerd:Akun){
-    //? sama lah sama update, beda di php aja, action nya 'register'
+    const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
+    const body = new URLSearchParams();
+    body.set('action', "register"); 
+    body.set('email', registerd.accountEmail);
+    body.set('password', registerd.accountPass);
+    body.set('nama', registerd.accountNama);
+    body.set('gender', registerd.accountGender);
+    body.set('alamat', registerd.accountAlamat);
+    body.set('tanggal_lahir', registerd.accountTanggalLahir);
+    body.set('foto', registerd.accountFotoProfil); 
+    const urlEncodedData = body.toString();
+
+    return this.http.post(this.url, urlEncodedData, { headers });
   }
 
 }

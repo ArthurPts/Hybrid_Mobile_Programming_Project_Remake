@@ -32,67 +32,226 @@
     >
       <ion-col size="12" size-md="6">
         <div class="login-container ion-padding">
-          <div class="header">
-            <h1>Welcome!</h1>
-            <p>Login to unlock the full potential of the app</p>
-          </div>
+          <!-- Form Login App -->
+          <div *ngIf="!isRegister">
+            <div class="header">
+              <h1>Welcome!</h1>
+              <p>Login to unlock the full potential of the app</p>
+            </div>
 
-          <form (ngSubmit)="login()">
-            <!-- Email -->
-            <ion-item class="input-item" lines="none">
+            <form (ngSubmit)="login()">
+              <!-- Email -->
+              <ion-item class="input-item" lines="none">
                 <ion-icon slot="start" name="mail-outline"></ion-icon>
 
-              <ion-input
-                labelPlacement="stacked"
-                label="Email"
-                placeholder="email@domain.com"
-                type="email"
-                [(ngModel)]="email"
-                name="email"
-                required
-              >
-              </ion-input>
-            </ion-item>
+                <ion-input
+                  labelPlacement="stacked"
+                  label="Email"
+                  placeholder="email@domain.com"
+                  type="email"
+                  [(ngModel)]="email"
+                  name="email"
+                  required
+                >
+                </ion-input>
+              </ion-item>
 
-            <!-- Password -->
-            <ion-item class="input-item" lines="none">
+              <!-- Password -->
+              <ion-item class="input-item" lines="none">
                 <ion-icon slot="start" name="lock-closed"></ion-icon>
 
-              <ion-input
-                labelPlacement="stacked"
-                label="Kata Sandi"
-                placeholder="Masukkan kata sandi Anda"
-                type="password"
-                [(ngModel)]="pass"
-                name="password"
-                required
-              >
-                <ion-input-password-toggle
-                  slot="end"
-                ></ion-input-password-toggle>
-              </ion-input>
-            </ion-item>
+                <ion-input
+                  labelPlacement="stacked"
+                  label="Kata Sandi"
+                  placeholder="Masukkan kata sandi Anda"
+                  type="password"
+                  [(ngModel)]="pass"
+                  name="password"
+                  required
+                >
+                  <ion-input-password-toggle
+                    slot="end"
+                  ></ion-input-password-toggle>
+                </ion-input>
+              </ion-item>
 
-            <ion-button expand="block" class="login-btn" type="submit">
-              Login
-            </ion-button>
-          </form>
+              <ion-button expand="block" class="login-btn" type="submit">
+                Login
+              </ion-button>
+            </form>
 
-          <div class="signup-link">
-            <span>Don't have an account?</span>
-            <a routerLink="/signup">Sign Up</a>
+            <div class="signup-link">
+              <span>Don't have an account?</span>
+              <a (click)="isRegister = true" style="cursor: pointer">Sign Up</a>
+            </div>
+
+            <div class="terms">
+              <p>
+                By continuing, I accept the Terms and Conditions & Privacy
+                Policy
+              </p>
+            </div>
           </div>
 
-          <div class="terms">
-            <p>
-              By continuing, I accept the Terms and Conditions & Privacy Policy
-            </p>
+          <!-- Form Registrasi Akun -->
+          <div *ngIf="isRegister">
+            <div class="header">
+              <h1>Create Account</h1>
+              <p>Join us now!</p>
+            </div>
+            <form (ngSubmit)="regis()">
+              <!-- Urutan Input sesuai db -->
+              <!-- Email -->
+              <ion-item class="input-item" lines="none">
+                <ion-icon slot="start" name="mail-outline"></ion-icon>
+
+                <ion-input
+                  labelPlacement="stacked"
+                  label="Email"
+                  placeholder="email@domain.com"
+                  type="email"
+                  [(ngModel)]="email"
+                  name="email"
+                  required
+                >
+                </ion-input>
+              </ion-item>
+
+              <!-- Nama -->
+              <ion-item class="input-item" lines="none">
+                <ion-icon slot="start" name="person-outline"></ion-icon>
+
+                <ion-input
+                  labelPlacement="stacked"
+                  label="Nama"
+                  placeholder="Nama lengkap anda"
+                  type="name"
+                  [(ngModel)]="nama"
+                  name="nama"
+                  required
+                >
+                </ion-input>
+              </ion-item>
+
+              <!-- Password -->
+              <ion-item class="input-item" lines="none">
+                <ion-icon slot="start" name="lock-closed"></ion-icon>
+
+                <ion-input
+                  labelPlacement="stacked"
+                  label="Kata Sandi"
+                  placeholder="Minimal 6 karakter"
+                  type="password"
+                  [(ngModel)]="pass"
+                  name="password"
+                  required
+                >
+                  <ion-input-password-toggle
+                    slot="end"
+                  ></ion-input-password-toggle>
+                </ion-input>
+              </ion-item>
+
+              <!--Konfirmasi Password -->
+              <ion-item class="input-item" lines="none">
+                <ion-icon slot="start" name="lock-closed"></ion-icon>
+                <ion-input
+                  labelPlacement="stacked"
+                  label="Konfirmasi Kata Sandi"
+                  type="password"
+                  [(ngModel)]="confirmPass"
+                  name="confirm_password"
+                  required
+                >
+                  <ion-input-password-toggle
+                    slot="end"
+                  ></ion-input-password-toggle>
+                </ion-input>
+              </ion-item>
+
+              <p
+                *ngIf="confirmPass && pass !== confirmPass"
+                style="color: red; padding-left: 16px"
+              >
+                * Kata sandi tidak cocok!
+              </p>
+
+              <!-- Gender -->
+              <ion-item class="input-item" lines="none">
+                <ion-icon slot="start" name="male-female-outline"></ion-icon>
+                <ion-select
+                  labelPlacement="stacked"
+                  label="Jenis Kelamin"
+                  placeholder="Pilih Gender"
+                  [(ngModel)]="gender"
+                  name="gender"
+                  required
+                >
+                  <ion-select-option value="L">Laki-laki</ion-select-option>
+                  <ion-select-option value="P">Perempuan</ion-select-option>
+                </ion-select>
+              </ion-item>
+
+              <!-- Foto -->
+              <ion-item class="input-item" lines="none">
+                <ion-icon slot="start" name="camera-outline"></ion-icon>
+                <ion-label position="stacked">Upload Foto Profil</ion-label>
+                <input
+                  type="file"
+                  (change)="ambilNamaFoto($event)"
+                  accept="image/*"
+                />
+              </ion-item>
+
+              <!-- Alamat -->
+              <ion-item class="input-item" lines="none">
+                <ion-icon slot="start" name="location-outline"></ion-icon>
+                <ion-textarea
+                  labelPlacement="stacked"
+                  label="Alamat"
+                  placeholder="Alamat lengkap"
+                  [(ngModel)]="alamat"
+                  name="alamat"
+                  [autoGrow]="true"
+                  required
+                >
+                </ion-textarea>
+              </ion-item>
+
+              <!-- Tgl Lahir -->
+              <ion-item class="input-item" lines="none">
+                <ion-icon slot="start" name="calendar-outline"></ion-icon>
+                <ion-input
+                  labelPlacement="stacked"
+                  label="Tanggal Lahir"
+                  type="date"
+                  [(ngModel)]="tanggal_lahir"
+                  name="tanggal_lahir"
+                  required
+                >
+                </ion-input>
+              </ion-item>
+
+              <ion-button expand="block" class="login-btn" type="submit">
+                Register
+              </ion-button>
+            </form>
+
+            <div class="signup-link">
+              <a (click)="isRegister = false" style="cursor: pointer"
+                >Back to Login</a
+              >
+            </div>
+
+            <div class="terms">
+              <p>
+                By continuing, I accept the Terms and Conditions & Privacy
+                Policy
+              </p>
+            </div>
           </div>
         </div>
       </ion-col>
     </ion-row>
   </ion-grid>
-
-
-
 </ion-content>
