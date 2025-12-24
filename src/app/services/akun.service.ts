@@ -66,4 +66,20 @@ export class AkunService {
     return this.http.post(this.url, urlEncodedData, { headers });
   }
 
+  getDataUser(getData:Akun){
+    const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
+    const body = new URLSearchParams();
+    body.set('action', "getDataUser"); 
+    body.set('email', getData.accountEmail);
+    body.set('password', getData.accountPass);
+    body.set('nama', getData.accountNama);
+    body.set('gender', getData.accountGender);
+    body.set('alamat', getData.accountAlamat);
+    body.set('tanggal_lahir', getData.accountTanggalLahir);
+    body.set('foto', getData.accountFotoProfil); 
+    const urlEncodedData = body.toString();
+
+    return this.http.post(this.url, urlEncodedData, { headers });
+  }
+
 }

@@ -1,14 +1,90 @@
 <ion-content [fullscreen]="true">
-  <ion-header [translucent]="true">
-    <ion-toolbar>
-      <ion-title>kelola-akun</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-grid *ngIf="akun; else loading">
+    <ion-row>
+      <ion-col size="12" size-md="3">
+        <div class="sidebar">
+          <div class="profile">
+            <img
+              [src]="'https://ubaya.cloud/hybrid/160423183/img/' + akun.accountFotoProfil"
+              class="avatar-preview"
+            />
+            <h3>{{ akun.accountNama }}</h3>
+          </div>
 
-  <ion-tab-button (click)="logout()">
-    <ion-label>logout</ion-label>
-  </ion-tab-button>
+          <ion-list lines="full" class="sidebar-list">
+            <ion-item button class="active">
+              <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+              <ion-label>Personal Information</ion-label>
+            </ion-item>
 
+            <ion-item button>
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-label>Login & Password</ion-label>
+            </ion-item>
 
+            <ion-tab-button (click)="logout()">
+              <ion-label>logout</ion-label>
+            </ion-tab-button>
+          </ion-list>
+        </div>
+      </ion-col>
 
+      <ion-col size="12" size-md="9">
+        <div class="form-container">
+          <h2>Personal Information</h2>
+
+          <form (ngSubmit)="saveChanges()">
+            <ion-radio-group [(ngModel)]="akun.accountGender" name="gender">
+              <ion-item lines="none">
+                <ion-label>Male</ion-label>
+                <ion-radio slot="start" value="Male"></ion-radio>
+              </ion-item>
+              <ion-item lines="none">
+                <ion-label>Female</ion-label>
+                <ion-radio slot="start" value="Female"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+
+            <ion-item>
+              <ion-input
+                label="Full Name"
+                [(ngModel)]="akun.accountNama"
+                name="fullName"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input
+                label="Address"
+                [(ngModel)]="akun.accountAlamat"
+                name="address"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input
+                label="Date of Birth"
+                type="date"
+                [(ngModel)]="akun.accountTanggalLahir"
+                name="dob"
+              ></ion-input>
+            </ion-item>
+          </form>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ng-template #loading>
+    <div
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      "
+    >
+      <ion-spinner></ion-spinner>
+    </div>
+  </ng-template>
 </ion-content>
