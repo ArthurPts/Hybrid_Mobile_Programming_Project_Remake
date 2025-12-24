@@ -1,9 +1,11 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
+  <ion-searchbar
+    animated="true"
+    placeholder="Cari Berita"
+    [(ngModel)]="beritaDicari"
+    (keyup)="cariBeritaByJudul()"
+    [ngStyle]="{color: 'black'}"
+  ></ion-searchbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
