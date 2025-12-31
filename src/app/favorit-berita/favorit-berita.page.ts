@@ -9,12 +9,21 @@ import { BeritaserviceService } from '../services/beritaservice.service';
 export class FavoritBeritaPage implements OnInit {
   favoritBerita: any[] = [];
   idUser: number = 1;
+  beritaFavorite: any[] = [];
 
-  constructor(private beritaservice: BeritaserviceService) { }
+  constructor(private beritaservice: BeritaserviceService) {}
+
+  getFavorites() {
+    this.beritaservice.loadRekomendasiBerita().subscribe((res: any) => {
+      console.log('Hasil API:', res); // Cek ini di Inspect Element > Console
+      if (res.result === 'OK') {
+        this.beritaFavorite = res.data;
+      }
+    });
+  }
 
   ngOnInit() {
-    // Fitur favorit dinonaktifkan - memerlukan tabel favorit di database
-    // this.loadFavoritBerita();
+    this.getFavorites();
   }
 
   ionViewWillEnter() {
@@ -25,7 +34,6 @@ export class FavoritBeritaPage implements OnInit {
   loadFavoritBerita() {
     // FITUR FAVORIT TIDAK AKTIF - memerlukan tabel favorit di database
     // Uncomment code di bawah jika sudah menambahkan tabel favorit ke database
-    
     /*
     const logged = JSON.parse(localStorage.getItem('logged') || 'null');
     if (logged && logged.accountId) {
@@ -40,5 +48,4 @@ export class FavoritBeritaPage implements OnInit {
     }
     */
   }
-
 }

@@ -1,49 +1,37 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Berita Favorit Saya</ion-title>
+<ion-header [translucent]="false">
+  <ion-toolbar color="dark">
+    <ion-title>Berita Favorit</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Fitur Favorit Belum Tersedia</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Fitur favorit memerlukan tabel tambahan di database yang belum tersedia.</p>
-      <p><strong>Gunakan fitur lain:</strong></p>
-      <ul>
-        <li><strong>Home</strong> - Lihat semua berita</li>
-        <li><strong>Berita</strong> - Kelola berita Anda sendiri</li>
-        <li><strong>Akun</strong> - Atur profil Anda</li>
-      </ul>
-    </ion-card-content>
-  </ion-card>
-
-  <!-- Uncomment code berikut jika sudah menambahkan tabel favorit ke database
+<ion-content class="ion-padding">
   <ion-list>
-    <ion-item 
-      *ngFor="let berita of favoritBerita" 
+    <ion-item
+      *ngFor="let berita of beritaFavorite"
       [routerLink]="['/detil-berita', berita.id]"
-      button>
+      button
+    >
       <ion-thumbnail slot="start">
-        <img [src]="'https://ubaya.cloud/hybrid/160423183/img/' + berita.foto" alt="{{ berita.judul }}" />
+        <img
+          [src]="'https://ubaya.cloud/hybrid/160423183/img/' + berita.foto"
+        />
       </ion-thumbnail>
       <ion-label>
-        <h2>{{ berita.judul }}</h2>
+        <h2 style="color: white">{{ berita.judul }}</h2>
         <p>{{ berita.penerbit }}</p>
         <ion-note color="medium">
           <ion-icon name="star" color="warning"></ion-icon>
-          {{ berita.rating || 0 }} ({{ berita.jumlahReview || 0 }} review)
+          {{ berita.rating || 0 }} ({{ berita.jumlah_review || 0 }} review)
         </ion-note>
       </ion-label>
-      <ion-icon name="bookmark" color="primary" slot="end"></ion-icon>
     </ion-item>
   </ion-list>
 
-  <div *ngIf="favoritBerita.length === 0" class="ion-text-center ion-padding">
-    <ion-icon name="bookmarks-outline" style="font-size: 64px; color: #ccc;"></ion-icon>
-    <p>Belum ada berita favorit</p>
+  <div *ngIf="beritaFavorite.length === 0" class="ion-text-center ion-padding">
+    <ion-icon
+      name="heart-dislike-outline"
+      style="font-size: 64px; color: #ccc"
+    ></ion-icon>
+    <p>Belum ada berita favorit saat ini.</p>
   </div>
-  -->
 </ion-content>

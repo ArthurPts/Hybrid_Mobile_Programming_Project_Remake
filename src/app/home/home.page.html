@@ -1,34 +1,57 @@
-<ion-header [translucent]="true">
-  <ion-searchbar
-    animated="true"
-    placeholder="Cari Berita"
-    [(ngModel)]="beritaDicari"
-    (keyup)="cariBeritaByJudul()"
-    [ngStyle]="{color: 'black'}"
-  >
-  </ion-searchbar>
+<ion-header [translucent]="false" class="ion-no-border">
+  <ion-toolbar color="dark">
+    <ion-searchbar
+      animated="true"
+      placeholder="Cari Berita"
+      [(ngModel)]="beritaDicari"
+      (keyup)="cariBeritaByJudul()"
+      [ngStyle]="{color: 'white'}"
+    >
+    </ion-searchbar>
+  </ion-toolbar>
 
-  <ion-segment class="tabs" [(ngModel)]="jenisTampilan" [scrollable]="true">
-    <ion-segment-button value="0" (click)="loadAllBerita(); jenisTampilan = 0">
-      <ion-label>Semua</ion-label>
-    </ion-segment-button>
-    <ion-segment-button 
-      *ngFor="let kat of categories" 
-      [value]="kat.id" 
-      (click)="pilihKategori(kat.id)">
-      <ion-label>{{ kat.nama }}</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+  <ion-toolbar color="dark">
+    <div style="display: flex; align-items: center">
+      <ion-segment
+        class="tabs"
+        [(ngModel)]="jenisTampilan"
+        [scrollable]="true"
+        style="flex: 1"
+      >
+        <ion-segment-button
+          value="0"
+          (click)="loadAllBerita(); jenisTampilan = 0"
+        >
+          <ion-label>Semua</ion-label>
+        </ion-segment-button>
+        <ion-segment-button
+          *ngFor="let kat of categories"
+          [value]="kat.id"
+          (click)="pilihKategori(kat.id)"
+        >
+          <ion-label>{{ kat.nama }}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <ion-button fill="clear" color="light" (click)="tambahKategori()">
+        <ion-icon name="add-circle-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <ion-list>
-    <ion-item 
-      *ngFor="let berita of (jenisTampilan === 0 && beritaDicari ? hasilPencarian : semuaBerita)" 
+    <ion-item
+      *ngFor="let berita of (jenisTampilan === 0 && beritaDicari ? hasilPencarian : semuaBerita)"
       [routerLink]="['/detil-berita', berita.id]"
-      button>
+      button
+    >
       <ion-thumbnail slot="start">
-        <img [src]="'https://ubaya.cloud/hybrid/160423183/img/' + berita.foto" alt="{{ berita.judul }}" />
+        <img
+          [src]="'https://ubaya.cloud/hybrid/160423183/img/' + berita.foto"
+          alt="{{ berita.judul }}"
+        />
       </ion-thumbnail>
       <ion-label>
         <h2>{{ berita.judul }}</h2>
@@ -42,7 +65,10 @@
   </ion-list>
 
   <div *ngIf="semuaBerita.length === 0" class="ion-text-center ion-padding">
-    <ion-icon name="newspaper-outline" style="font-size: 64px; color: #ccc;"></ion-icon>
+    <ion-icon
+      name="newspaper-outline"
+      style="font-size: 64px; color: #ccc"
+    ></ion-icon>
     <p>Belum ada berita tersedia</p>
   </div>
 </ion-content>

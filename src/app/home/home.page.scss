@@ -25,3 +25,38 @@
 #container a {
   text-decoration: none;
 }
+
+/* Memastikan Header memiliki latar belakang solid */
+ion-header {
+  background: #121212; /* Warna background navbar gelap */
+}
+
+/* Memperbaiki warna teks Searchbar */
+ion-searchbar {
+  --color: #ffffff !important;
+  --placeholder-color: #bbbbbb !important;
+  --icon-color: #ffffff !important;
+}
+
+/* MEMPERBAIKI TEKS SEGMENT (TABS) YANG TIDAK TERLIHAT */
+ion-segment {
+  background: #1d1d1d; /* Background sedikit lebih terang dari header agar kontras */
+  
+  ion-segment-button {
+    --color: #ffffff;             /* Warna teks saat tidak dipilih */
+    --color-checked: #3880ff;     /* Warna teks saat dipilih (biru) */
+    --indicator-color: #3880ff;   /* Warna garis bawah saat dipilih */
+    
+    ion-label {
+      font-weight: bold;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+  }
+}
+
+/* Memastikan Toolbar tidak transparan */
+ion-toolbar {
+  --background: #121212;
+  --border-style: none;
+}

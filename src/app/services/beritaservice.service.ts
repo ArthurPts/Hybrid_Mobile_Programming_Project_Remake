@@ -105,7 +105,13 @@ export class BeritaserviceService {
     return this.http.post(this.url, urlEncodedData, { headers });
   }
 
-  tambahBerita(judul: string, deskripsi: string, foto: string, kategori: string[], emailPenerbit: string): Observable<any> {
+  tambahBerita(
+    judul: string,
+    deskripsi: string,
+    foto: string,
+    kategori: string[],
+    emailPenerbit: string
+  ): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
     });
@@ -131,5 +137,29 @@ export class BeritaserviceService {
     const urlEncodedData = body.toString();
 
     return this.http.post(this.url, urlEncodedData, { headers });
+  }
+
+  loadRekomendasiBerita(): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+
+    const body = new URLSearchParams();
+    body.set('action', 'getBeritabyRekomendasi');
+
+    return this.http.post(this.url, body.toString(), { headers });
+  }
+
+  addKategori(namaKategori: string): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+
+    const body = new URLSearchParams();
+    body.set('action', 'addKategori');
+    // Kirim nama kategori baru, bukan ID berita
+    body.set('nama', namaKategori);
+
+    return this.http.post(this.url, body.toString(), { headers });
   }
 }
