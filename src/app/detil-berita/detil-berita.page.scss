@@ -1,0 +1,19 @@
+.news-page {
+  --background: #121212; // Samakan dengan background gelap Home
+  background: #121212;
+}
+
+.news-container {
+  padding: 10px;
+}
+
+.news-image img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+}
+
+h3 {
+  color: white;
+  font-size: 1.1em;
+}

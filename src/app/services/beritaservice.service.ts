@@ -157,9 +157,45 @@ export class BeritaserviceService {
 
     const body = new URLSearchParams();
     body.set('action', 'addKategori');
-    // Kirim nama kategori baru, bukan ID berita
     body.set('nama', namaKategori);
 
     return this.http.post(this.url, body.toString(), { headers });
   }
+
+  getDetailBerita(idBerita: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+    const body = new URLSearchParams();
+    body.set('action', 'getDetailBerita');
+    body.set('idBerita', idBerita.toString());
+
+    return this.http.post(this.url, body.toString(), { headers });
+  }
+
+  updateRating(idBerita: number, ratingBaru: number, rateUserLama: number): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+
+    const body = new URLSearchParams();
+    body.set('action', 'updateRating');
+    body.set('id', idBerita.toString()); // Pastikan key 'id' sesuai dengan $_POST['id'] di PHP
+    body.set('ratingBaru', ratingBaru.toString());
+    body.set('rateUserLama', rateUserLama.toString());
+
+    return this.http.post(this.url, body.toString(), { headers });
+  }
+
+  //fitur tambahan (nambah view ketika melihat beritanya)
+  // addView(id: number) {
+  //   for (let i = 0; i < this.berita.length; i++) {
+  //     if (this.berita[i].id === id) {
+  //       this.berita[i].views = this.berita[i].views + 1;
+  //       break;
+  //     }
+  //   }
+  // }
+
+  
 }

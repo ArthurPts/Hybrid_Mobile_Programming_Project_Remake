@@ -1,14 +1,54 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Berita saya</ion-title>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detail Berita</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">berita saya</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content *ngIf="berita; else notFound" [fullscreen]="true" class="news-page ion-padding">
+  <div class="news-container">
+
+    <div class="news-header">
+      <h2 style="color: white; font-weight: bold;">{{ berita.judul }}</h2>
+      <div class="date" style="color: #aaa;">{{ berita.tanggal_rilis }}</div>
+      <div class="channel">
+        <span style="color: #3880ff;">{{ berita.penerbit }}</span>
+      </div>
+    </div>
+
+    <div class="news-image" style="margin-top: 15px;">
+      <img [src]="'https://ubaya.cloud/hybrid/160423183/img/' + berita.foto" 
+           alt="{{ berita.judul }}" style="border-radius: 8px;" />
+    </div>
+
+    <div class="news-content" style="margin-top: 20px; line-height: 1.6; color: #ddd;">
+      <p>{{ berita.isi_berita || 'Konten berita belum tersedia.' }}</p>
+    </div>
+
+    <div class="rating-stars" style="margin: 20px 0;">
+      <ion-icon *ngFor="let jum of [1,2,3,4,5]" 
+                [name]="jum <= (berita.rating || 0) ? 'star' : 'star-outline'" 
+                color="warning"
+                size="large" (click)="beriRating(jum)"></ion-icon>
+      <p style="font-size: 0.9em; color: #888;">Rating: {{ berita.rating }} / 5</p>
+    </div>
+
+    <hr style="border-color: #333;" />
+
+    <div class="comments-section">
+      <h3>Komentar</h3>
+      </div>
+  </div>
 </ion-content>
 
+<ng-template #notFound>
+  <ion-content color="dark" class="ion-text-center ion-padding">
+    <div style="margin-top: 50%;">
+      <ion-icon name="alert-circle-outline" color="danger" style="font-size: 64px;"></ion-icon>
+      <h2 style="color: white;">Berita tidak ditemukan</h2>
+      <ion-button routerLink="/home" fill="clear">Kembali</ion-button>
+    </div>
+  </ion-content>
+</ng-template>
