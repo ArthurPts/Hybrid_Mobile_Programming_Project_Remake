@@ -36,18 +36,17 @@
           <form (ngSubmit)="saveChanges()">
             <ion-radio-group [(ngModel)]="akun.accountGender" name="gender">
               <ion-item lines="none">
-                <ion-label>Pria</ion-label>
-                <ion-radio slot="start" value="pria"></ion-radio>
+                <ion-radio slot="start" value="pria">Pria</ion-radio>
               </ion-item>
               <ion-item lines="none">
-                <ion-label>Wanita</ion-label>
-                <ion-radio slot="start" value="wanita"></ion-radio>
+                <ion-radio slot="start" value="wanita">Wanita</ion-radio>
               </ion-item>
             </ion-radio-group>
 
             <ion-item>
               <ion-input
                 label="Full Name"
+                label-placement="stacked"
                 [(ngModel)]="akun.accountNama"
                 name="fullName"
               ></ion-input>
@@ -56,6 +55,7 @@
             <ion-item>
               <ion-input
                 label="Address"
+                label-placement="stacked"
                 [(ngModel)]="akun.accountAlamat"
                 name="address"
               ></ion-input>
@@ -64,11 +64,58 @@
             <ion-item>
               <ion-input
                 label="Date of Birth"
+                label-placement="stacked"
                 type="date"
                 [(ngModel)]="akun.accountTanggalLahir"
                 name="dob"
               ></ion-input>
             </ion-item>
+
+            <h2 style="margin-top: 20px">Login & Password</h2>
+            <ion-item>
+              <ion-input
+                label="New Email"
+                label-placement="stacked"
+                type="text"
+                [(ngModel)]="akun.accountEmail"
+                name="newEmail"
+                placeholder="Isi untuk mengganti email"
+              ></ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input
+                label="New Password"
+                label-placement="stacked"
+                type="password"
+                [(ngModel)]="akun.accountPass"
+                name="newPassword"
+                placeholder="Isi untuk mengganti password"
+              ></ion-input>
+            </ion-item>
+
+            <div
+              class="action-buttons"
+              style="display: flex; gap: 10px; margin-top: 20px"
+            >
+              <ion-button
+                fill="outline"
+                color="danger"
+                type="button"
+                (click)="discardChanges()"
+                style="flex: 1"
+              >
+                Discard Changes
+              </ion-button>
+              <ion-button
+                expand="block"
+                color="warning"
+                type="submit"
+                style="flex: 1"
+              >
+                Save Changes
+              </ion-button>
+            </div>
           </form>
         </div>
       </ion-col>

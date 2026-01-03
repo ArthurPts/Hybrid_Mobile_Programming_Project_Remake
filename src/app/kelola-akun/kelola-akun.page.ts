@@ -9,25 +9,25 @@ import { Router } from '@angular/router';
   styleUrls: ['./kelola-akun.page.scss'],
 })
 export class KelolaAkunPage implements OnInit {
-akun: Akun = {
+  akun: Akun = {
     accountEmail: '',
     accountPass: '',
     accountNama: '',
     accountGender: '',
     accountAlamat: '',
     accountTanggalLahir: '',
-    accountFotoProfil: 'default.png'
+    accountFotoProfil: 'default.png',
   };
   constructor(
-    private root:AppComponent,
+    private root: AppComponent,
     private router: Router,
     private akunService: AkunService,
-    private alertCtrl: AlertController) { }
+    private alertCtrl: AlertController
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
-  logout(){
+  logout() {
     this.root.logout();
   }
 
@@ -35,25 +35,26 @@ akun: Akun = {
     this.loadUserData();
   }
 
-
-
   private loadUserData() {
-    // Ambil data dari localStorage/session yang disimpan saat login
     const data = localStorage.getItem('user_login');
-    if (data) {
-      const user = JSON.parse(data);
-      // Mapping data dari PHP/Storage ke variabel akun
-      this.akun = {
-        accountEmail: user.email,
-        accountPass: user.password,
-        accountNama: user.nama,
-        accountGender: user.gender,
-        accountAlamat: user.alamat,
-        accountTanggalLahir: user.tanggal_lahir,
-        accountFotoProfil: user.foto
-      };
+
+    if (data && data !== 'undefined' && data !== 'null') {
+      try {
+        const user = JSON.parse(data);
+        this.akun = {
+          accountEmail: user.email || '',
+          accountPass: user.password || '',
+          accountNama: user.nama || '',
+          accountGender: user.gender || '',
+          accountAlamat: user.alamat || '',
+          accountTanggalLahir: user.tanggal_lahir || '',
+          accountFotoProfil: user.foto || 'default.png',
+        };
+      } catch (e) {
+        console.error('Gagal parse JSON', e);
+      }
     } else {
-      this.router.navigateByUrl('/login');
+      this.root.isLoginOpen = true;
     }
   }
 
@@ -66,7 +67,7 @@ akun: Akun = {
       if (res.result === 'success') {
         // Update local storage agar perubahan langsung terlihat di seluruh aplikasi
         localStorage.setItem('user_login', JSON.stringify(res.user_data));
-        
+
         const alert = await this.alertCtrl.create({
           header: 'Berhasil',
           message: 'Perubahan berhasil disimpan!',
@@ -76,5 +77,4 @@ akun: Akun = {
       }
     });
   }
-
 }
