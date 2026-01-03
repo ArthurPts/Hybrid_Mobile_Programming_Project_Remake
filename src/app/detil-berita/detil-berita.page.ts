@@ -10,7 +10,11 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class DetilBeritaPage implements OnInit {
   berita: any;
+  fotoList: string[] = [];
   id: number = 0;
+  isFavorite = false;
+  comments: { user: string; text: string; date: string }[] = [];
+  newComment = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -18,67 +22,87 @@ export class DetilBeritaPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Ambil ID dari parameter URL
-    this.id = +this.route.snapshot.params['id'];
-    this.loadDetailBerita();
+    // Ambil ID dari parameter URL (idBerita sesuai routing)
+    const idParam = this.route.snapshot.paramMap.get('idBerita');
+    this.id = idParam ? +idParam : 0;
+
+    if (this.id > 0) {
+      this.loadDetailBerita();
+      this.loadComments();
+      this.checkFavorite();
+    }
   }
 
   loadDetailBerita() {
     this.beritaservice.getDetailBerita(this.id).subscribe((res: any) => {
       if (res.result === 'OK') {
-        this.berita = res.data; 
+        this.berita = res.data;
+        // Pastikan foto utama tetap tampil walau foto_list kosong
+        this.fotoList = res.data.foto_list && res.data.foto_list.length
+          ? res.data.foto_list
+          : [res.data.foto].filter(Boolean);
+
+        // Tambah view hitungan server-side (optional)
+        this.beritaservice.addViewBerita(this.id).subscribe();
       }
     });
   }
 
   beriRating(bintang: number) {
-    const ratingLama = this.berita.rateUser || 0;
-
-    this.beritaservice
-      .updateRating(this.id, bintang, ratingLama)
-      .subscribe((res: any) => {
-        if (res.result === 'OK') {
-          // Update data di UI secara realtime
-          this.berita.rating = res.newRating;
-          this.berita.jumlah_review = res.newJumlahReview;
-          this.berita.rateUser = bintang; // Simpan pilihan user saat ini
-          alert('Terima kasih atas ratingnya!');
-        }
-      });
+    this.beritaservice.updateRating(this.id, bintang, 0).subscribe((res: any) => {
+      if (res.result === 'OK') {
+        this.berita.rating = res.newRating;
+        this.berita.jumlah_review = res.newJumlahReview;
+        alert('Terima kasih atas ratingnya!');
+      }
+    });
   }
 
+  toggleFavorite() {
+    const favRaw = localStorage.getItem('favorites') || '[]';
+    const favList: number[] = JSON.parse(favRaw);
 
-  // Tambah komen - fitur tambahan!! (blm aktif)
-  // addComment() {
-  //   if (this.newComment.trim() !== '') {
-  //     const newCmt = {
-  //       idBerita: this.id,
-  //       username: `${this.userData.namaDepan} ${this.userData.namaBelakang}`,
-  //       comment: this.newComment,
-  //       avatar: this.userData.fotoProfil || 'assets/my-avatar.png',
-  //     };
+    if (this.isFavorite) {
+      const updated = favList.filter((x) => x !== this.id);
+      localStorage.setItem('favorites', JSON.stringify(updated));
+      this.isFavorite = false;
+    } else {
+      favList.push(this.id);
+      localStorage.setItem('favorites', JSON.stringify(favList));
+      this.isFavorite = true;
+    }
+  }
 
-  //     this.commentServices.addComment(newCmt);
-  //     this.filteredComments.push(newCmt);
-  //     this.newComment = '';
-  //   }
-  // }
+  checkFavorite() {
+    const favRaw = localStorage.getItem('favorites') || '[]';
+    const favList: number[] = JSON.parse(favRaw);
+    this.isFavorite = favList.includes(this.id);
+  }
 
-  // countComments(idBerita: number): number {
-  //   return this.commentServices.getCommentCountByBeritaId(this.id);
-  // }
+  loadComments() {
+    const raw = localStorage.getItem('comments') || '{}';
+    const data = JSON.parse(raw);
+    this.comments = data[this.id] || [];
+  }
 
-  // getComments(idBerita: number): Comment[] {
-  //   return this.commentServices.getCommentsByBeritaId(this.id);
-  // }
+  addComment() {
+    const text = this.newComment.trim();
+    if (!text) return;
 
-  // private loadUserData() {
-  //   const user = this.akunService.getCurrentUser();
-  //   if (user) {
-  //     this.akun = { ...user };
-  //     this.userData = { ...user.biodata };
-  //   } else {
-  //     this.router.navigateByUrl('/login', { replaceUrl: true });
-  //   }
-  // }
+    const raw = localStorage.getItem('comments') || '{}';
+    const data = JSON.parse(raw);
+
+    const comment = {
+      user: 'Anonymous',
+      text,
+      date: new Date().toISOString(),
+    };
+
+    if (!data[this.id]) data[this.id] = [];
+    data[this.id].push(comment);
+
+    localStorage.setItem('comments', JSON.stringify(data));
+    this.comments = data[this.id];
+    this.newComment = '';
+  }
 }

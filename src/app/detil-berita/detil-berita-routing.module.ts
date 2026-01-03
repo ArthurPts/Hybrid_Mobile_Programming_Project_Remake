@@ -5,6 +5,7 @@ import { DetilBeritaPage } from './detil-berita.page';
 
 const routes: Routes = [
   {
+    // Parent route already provides /detil-berita/:idBerita; keep child path empty
     path: '',
     component: DetilBeritaPage
   }

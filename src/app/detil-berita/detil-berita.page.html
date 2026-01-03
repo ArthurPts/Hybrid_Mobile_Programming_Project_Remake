@@ -7,11 +7,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-content
-    *ngIf="berita; else notFound"
-    [fullscreen]="true"
-    class="news-page ion-padding"
-  >
+  <ion-content *ngIf="berita; else notFound" [fullscreen]="true" class="news-page ion-padding">
     <div class="news-container">
       <div class="news-header">
         <h2 style="color: white; font-weight: bold">{{ berita.judul }}</h2>
@@ -21,21 +17,45 @@
         </div>
       </div>
 
+      <!-- Galeri foto: 1 besar (utama) + 3 kecil di bawah -->
       <div class="news-image" style="margin-top: 15px">
         <img
-          [src]="berita.foto.startsWith('http') ? berita.foto : 'https://ubaya.cloud/hybrid/160423183/img/' + berita.foto"
+          class="main-photo"
+          [src]="fotoList[0] ? (fotoList[0].startsWith('http') ? fotoList[0] : 'https://ubaya.cloud/hybrid/160423183/img/' + fotoList[0]) : ''"
           alt="{{ berita.judul }}"
-          style="border-radius: 8px"
         />
       </div>
 
-      <div
-        class="news-content"
-        style="margin-top: 20px; line-height: 1.6; color: #ddd"
-      >
+      <ion-grid *ngIf="fotoList.length > 1" style="margin-top: 12px">
+        <ion-row>
+          <ion-col size="4" *ngFor="let foto of fotoList.slice(1)">
+            <img
+              class="thumb-photo"
+              [src]="foto.startsWith('http') ? foto : 'https://ubaya.cloud/hybrid/160423183/img/' + foto"
+              alt="{{ berita.judul }}"
+            />
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <!-- Tombol favorite -->
+      <div class="ion-padding-vertical" style="display: flex; align-items: center; gap: 8px">
+        <ion-button fill="outline" color="warning" (click)="toggleFavorite()">
+          <ion-icon [name]="isFavorite ? 'bookmark' : 'bookmark-outline'" slot="start"></ion-icon>
+          {{ isFavorite ? 'Hapus dari Favorit' : 'Tambah ke Favorit' }}
+        </ion-button>
+        <ion-chip color="medium">
+          <ion-icon name="eye-outline"></ion-icon>
+          <ion-label>{{ berita.views || 0 }} views</ion-label>
+        </ion-chip>
+      </div>
+
+      <!-- Isi berita -->
+      <div class="news-content" style="margin-top: 10px; line-height: 1.6; color: #ddd">
         <p>{{ berita.isi_berita || 'Konten berita belum tersedia.' }}</p>
       </div>
 
+      <!-- Rating -->
       <div class="rating-stars" style="margin: 20px 0">
         <ion-icon
           *ngFor="let jum of [1,2,3,4,5]"
@@ -45,14 +65,42 @@
           (click)="beriRating(jum)"
         ></ion-icon>
         <p style="font-size: 0.9em; color: #888">
-          Rating: {{ berita.rating }} / 5
+          Rating: {{ berita.rating }} / 5 ({{ berita.jumlah_review || 0 }} review)
         </p>
       </div>
 
       <hr style="border-color: #333" />
 
+      <!-- Komentar -->
       <div class="comments-section">
-        <h3>Komentar</h3>
+        <h3 style="color: white">Komentar</h3>
+        <ion-item lines="none" color="dark">
+          <ion-textarea
+            placeholder="Tulis komentar..."
+            [(ngModel)]="newComment"
+            autoGrow="true"
+          ></ion-textarea>
+        </ion-item>
+        <ion-button expand="block" color="primary" (click)="addComment()">
+          Kirim Komentar
+        </ion-button>
+
+        <ion-list *ngIf="comments.length > 0" color="dark">
+          <ion-item *ngFor="let c of comments" color="dark">
+            <ion-avatar slot="start">
+              <img src="https://ui-avatars.com/api/?name={{ c.user }}&background=1e1e1e&color=fff" />
+            </ion-avatar>
+            <ion-label>
+              <h3>{{ c.user }}</h3>
+              <p>{{ c.text }}</p>
+              <ion-note>{{ c.date | date:'medium' }}</ion-note>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+
+        <div *ngIf="comments.length === 0" class="ion-text-center" style="color:#aaa; margin-top:12px;">
+          Belum ada komentar. Jadilah yang pertama!
+        </div>
       </div>
     </div>
   </ion-content>
