@@ -53,7 +53,7 @@ export class AppComponent {
           accountFotoProfil: respon.foto,
         };
 
-        // Simpan ke variabel global AppComponent secara manual
+        // Simpan ke variabel global AppComponent secara manual agar tidak tabrak dgn login
         const dataUserManual = {
           email: respon.email,
           password: respon.password,

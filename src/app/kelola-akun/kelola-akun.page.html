@@ -5,26 +5,24 @@
         <div class="sidebar">
           <div class="profile">
             <img
-              [src]="'https://ubaya.cloud/hybrid/160423183/img/' + akun.accountFotoProfil"
-              class="avatar-preview"
+              [src]="akun.accountFotoProfil.startsWith('http') ? akun.accountFotoProfil : 'https://ubaya.cloud/hybrid/160423183/img/' + akun.accountFotoProfil"
+              alt="{{ akun.accountNama }}"
+              (error)="akun.accountFotoProfil = 'https://ionicframework.com/docs/img/demos/thumbnail.svg'"
             />
             <h3>{{ akun.accountNama }}</h3>
           </div>
 
           <ion-list lines="full" class="sidebar-list">
-            <ion-item button class="active">
-              <ion-icon name="person-circle-outline" slot="start"></ion-icon>
-              <ion-label>Personal Information</ion-label>
+            <ion-item
+              button
+              (click)="logout()"
+              expand="block"
+              color="success"
+              type="submit"
+              style="flex: 1"
+            >
+              <ion-label>Logout</ion-label>
             </ion-item>
-
-            <ion-item button>
-              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
-              <ion-label>Login & Password</ion-label>
-            </ion-item>
-
-            <ion-tab-button (click)="logout()">
-              <ion-label>logout</ion-label>
-            </ion-tab-button>
           </ion-list>
         </div>
       </ion-col>
