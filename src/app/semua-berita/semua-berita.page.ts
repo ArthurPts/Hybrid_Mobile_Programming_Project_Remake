@@ -58,6 +58,8 @@ export class SemuaBeritaPage implements OnInit {
     }
   }
 
+  
+
   // Pengecekan Judul Duplikat
   async simpanBerita(modal: any) {
     // 1. Cek apakah judul sudah ada di list (Poin 5)

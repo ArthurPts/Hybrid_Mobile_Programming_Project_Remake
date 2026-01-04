@@ -9,26 +9,34 @@ import { BeritaserviceService } from '../services/beritaservice.service';
 export class FavoritBeritaPage implements OnInit {
   favoritBerita: any[] = [];
   idUser: number = 1;
-  beritaFavorite: any[] = [];
+  id: number = 0;
+  beritaFavoriteId: any[] = [];
 
   constructor(private beritaservice: BeritaserviceService) {}
 
   getFavorites() {
-    this.beritaservice.loadRekomendasiBerita().subscribe((res: any) => {
-      console.log('Hasil API:', res); // Cek ini di Inspect Element > Console
-      if (res.result === 'OK') {
-        this.beritaFavorite = res.data;
-      }
-    });
+    const raw = localStorage.getItem('favorites') || '[]';
+    const ids: number[] = JSON.parse(raw);
+
+    if (ids.length === 0) {
+      this.beritaFavoriteId = [];
+      return;
+    }
+
+    this.beritaservice.getBeritaFavoriteById(ids).subscribe((res: any) => {
+        console.log('Hasil API:', res); // Cek ini di Inspect Element > Console
+        if (res.result === 'OK') {
+          this.favoritBerita = res.data;
+          console.log(this.favoritBerita);
+        }
+      });
   }
 
   ngOnInit() {
-    this.getFavorites();
   }
 
   ionViewWillEnter() {
-    // Fitur favorit dinonaktifkan - memerlukan tabel favorit di database
-    // this.loadFavoritBerita();
+    this.getFavorites();
   }
 
   loadFavoritBerita() {
@@ -41,7 +49,7 @@ export class FavoritBeritaPage implements OnInit {
       this.beritaservice.getFavoritBerita(this.idUser).subscribe((response) => {
         if (response.result === 'OK') {
           this.favoritBerita = response.data;
-        } else {
+        } else {  
           this.favoritBerita = [];
         }
       });

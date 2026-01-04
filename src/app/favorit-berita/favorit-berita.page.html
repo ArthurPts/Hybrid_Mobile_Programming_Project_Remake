@@ -6,15 +6,10 @@
 
 <ion-content class="ion-padding">
   <ion-list>
-    <ion-item
-      *ngFor="let berita of beritaFavorite"
-      [routerLink]="['/detil-berita', berita.id]"
-      button
-    >
+    <ion-item *ngFor="let berita of favoritBerita" [routerLink]="['/detil-berita', berita.id]" button>
       <ion-thumbnail slot="start">
-        <img
-          [src]="'https://ubaya.cloud/hybrid/160423183/img/' + berita.foto"
-        />
+        <img [src]="berita.foto.startsWith('http') ? berita.foto : 'https://ubaya.cloud/hybrid/160423183/img/' + berita.foto"
+          alt="{{ berita.judul }}" (error)="berita.foto = 'https://ionicframework.com/docs/img/demos/thumbnail.svg'" />
       </ion-thumbnail>
       <ion-label>
         <h2 style="color: white">{{ berita.judul }}</h2>
@@ -27,11 +22,8 @@
     </ion-item>
   </ion-list>
 
-  <div *ngIf="beritaFavorite.length === 0" class="ion-text-center ion-padding">
-    <ion-icon
-      name="heart-dislike-outline"
-      style="font-size: 64px; color: #ccc"
-    ></ion-icon>
+  <div *ngIf="favoritBerita.length === 0" class="ion-text-center ion-padding">
+    <ion-icon name="heart-dislike-outline" style="font-size: 64px; color: #ccc"></ion-icon>
     <p>Belum ada berita favorit saat ini.</p>
   </div>
 </ion-content>
