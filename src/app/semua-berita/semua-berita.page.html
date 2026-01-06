@@ -11,13 +11,13 @@
     </ion-list-header>
 
     <ion-item-sliding *ngFor="let b of beritaSaya">
-      <ion-item>
+      <ion-item button [routerLink]="['/detil-berita', b.id]">
         <ion-thumbnail slot="start">
-          <img [src]="'https://ubaya.cloud/hybrid/160423183/img/' + b.foto" />
+          <img [src]="b.foto" *ngIf="b.foto" />
         </ion-thumbnail>
         <ion-label>
           <h2>{{ b.judul }}</h2>
-          <p>{{ b.kategori.join(', ') }}</p>
+          <p>{{ b.kategori_names || 'Tanpa Kategori' }}</p>
         </ion-label>
       </ion-item>
 
