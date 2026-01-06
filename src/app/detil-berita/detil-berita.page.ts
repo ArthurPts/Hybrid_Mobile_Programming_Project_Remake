@@ -13,8 +13,11 @@ export class DetilBeritaPage implements OnInit {
   fotoList: string[] = [];
   id: number = 0;
   isFavorite = false;
-  comments: { user: string; text: string; date: string }[] = [];
+  comments: { userName: string; userEmail?: string; userPhoto?: string; text: string; date: string }[] = [];
   newComment = '';
+  currentUserName: string = '';
+  currentUserEmail: string = '';
+  currentUserPhoto: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -25,6 +28,7 @@ export class DetilBeritaPage implements OnInit {
     // Ambil ID dari parameter URL (idBerita sesuai routing)
     const idParam = this.route.snapshot.paramMap.get('idBerita');
     this.id = idParam ? +idParam : 0;
+    this.loadCurrentUser();
 
     if (this.id > 0) {
       this.loadDetailBerita();
@@ -82,18 +86,35 @@ export class DetilBeritaPage implements OnInit {
   loadComments() {
     const raw = localStorage.getItem('comments') || '{}';
     const data = JSON.parse(raw);
-    this.comments = data[this.id] || [];
+    const list = data[this.id] || [];
+
+    // Backward compatibility: map old {user} shape to new {userName, userEmail}
+    this.comments = list.map((c: any) => ({
+      userName: c.userName || c.user || c.userEmail || 'Pengguna tidak diketahui',
+      userEmail: c.userEmail || '',
+      userPhoto: c.userPhoto || '',
+      text: c.text,
+      date: c.date,
+    }));
   }
 
   addComment() {
     const text = this.newComment.trim();
     if (!text) return;
 
+    // Wajib login; data akun diambil dari tabel akuns lewat login dan disimpan di localStorage user_login
+    if (!this.currentUserEmail) {
+      alert('Anda harus login untuk berkomentar.');
+      return;
+    }
+
     const raw = localStorage.getItem('comments') || '{}';
     const data = JSON.parse(raw);
 
     const comment = {
-      user: 'Anonymous',
+      userName: this.currentUserName || this.currentUserEmail,
+      userEmail: this.currentUserEmail,
+      userPhoto: this.currentUserPhoto || '',
       text,
       date: new Date().toISOString(),
     };
@@ -104,5 +125,29 @@ export class DetilBeritaPage implements OnInit {
     localStorage.setItem('comments', JSON.stringify(data));
     this.comments = data[this.id];
     this.newComment = '';
+  }
+
+  deleteComment(index: number) {
+    const raw = localStorage.getItem('comments') || '{}';
+    const data = JSON.parse(raw);
+    
+    if (data[this.id]) {
+      data[this.id].splice(index, 1); // hapus komentar di index tertentu
+      localStorage.setItem('comments', JSON.stringify(data));
+      this.comments = data[this.id]; // refresh tampilan
+    }
+  }
+
+  private loadCurrentUser() {
+    const raw = localStorage.getItem('user_login');
+    if (!raw || raw === 'undefined' || raw === 'null') return;
+    try {
+      const u = JSON.parse(raw);
+      this.currentUserName = u.nama || u.email || '';
+      this.currentUserEmail = u.email || '';
+      this.currentUserPhoto = u.foto || '';
+    } catch (e) {
+      console.warn('Gagal parse user_login', e);
+    }
   }
 }

@@ -1,4 +1,4 @@
-  <ion-header class="ion-no-border">
+<ion-header class="ion-no-border">
     <ion-toolbar color="dark">
       <ion-buttons slot="start">
         <ion-back-button defaultHref="/home"></ion-back-button>
@@ -86,15 +86,18 @@
         </ion-button>
 
         <ion-list *ngIf="comments.length > 0" color="dark">
-          <ion-item *ngFor="let c of comments" color="dark">
+          <ion-item *ngFor="let c of comments; let i = index" color="dark">
             <ion-avatar slot="start">
-              <img src="https://ui-avatars.com/api/?name={{ c.user }}&background=1e1e1e&color=fff" />
+              <img [src]="c.userPhoto || 'https://ui-avatars.com/api/?name=' + (c.userName || c.userEmail || 'User') + '&background=1e1e1e&color=fff'" />
             </ion-avatar>
             <ion-label>
-              <h3>{{ c.user }}</h3>
+              <h3>{{ c.userName || c.userEmail || 'Pengguna tidak diketahui' }}</h3>
               <p>{{ c.text }}</p>
               <ion-note>{{ c.date | date:'medium' }}</ion-note>
             </ion-label>
+            <ion-button fill="clear" color="danger" (click)="deleteComment(i)" slot="end">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
           </ion-item>
         </ion-list>
 
