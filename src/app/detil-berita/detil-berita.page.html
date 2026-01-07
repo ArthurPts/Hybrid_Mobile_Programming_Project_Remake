@@ -95,7 +95,7 @@
               <p>{{ c.text }}</p>
               <ion-note>{{ c.date | date:'medium' }} </ion-note>
             </ion-label>
-            <ion-button fill="clear" color="danger" (click)="deleteComment(c.komenID)" slot="end">
+            <ion-button *ngIf="c.userName === currentUserNama" fill="clear" color="danger" (click)="deleteComment(c.komenID)" slot="end">
               <ion-icon name="trash-outline"></ion-icon>
             </ion-button>
           </ion-item>

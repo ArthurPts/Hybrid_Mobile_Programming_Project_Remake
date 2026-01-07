@@ -13,11 +13,11 @@ import { AlertController } from '@ionic/angular';
 export class SemuaBeritaPage implements OnInit {
   beritaSaya: any[] = [];
   daftarKategori: any[] = [];
-  idUser: number = 1;
+  // idUser: number = 1;
 
   formBerita = {
     judul: '',
-    deskripsi: '',
+    deskripsi: '', //isi_berita
     foto: '',
     kategori: [],
   };
@@ -57,8 +57,6 @@ export class SemuaBeritaPage implements OnInit {
       });
     }
   }
-
-  
 
   // Pengecekan Judul Duplikat
   async simpanBerita(modal: any) {

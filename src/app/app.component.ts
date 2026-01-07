@@ -20,27 +20,9 @@ export class AppComponent {
   logged: Akun | null = null;
   isRegister: boolean = false;
 
-  //variable khusus simpan data login user
-  // public userLoggedIn: any = null;
-  // public isLoginOpen: boolean = false;
-
   constructor(private objAkun: AkunService) {
     this.logged = JSON.parse(localStorage.getItem('logged') || 'null');
-    // this.checkLoginStatus();
-    // const data = localStorage.getItem('user_login');
-    // if (data && data !== 'undefined') {
-    //   this.userLoggedIn = JSON.parse(data);
-    // }
   }
-
-  // checkLoginStatus() {
-  //   const data = localStorage.getItem('user_login');
-  //   if (data && data !== 'undefined') {
-  //     this.userLoggedIn = JSON.parse(data);
-  //   } else {
-  //     this.userLoggedIn = null;
-  //   }
-  // }
 
   login() {
     this.objAkun.login(this.email, this.pass).subscribe((respon: any) => {
@@ -55,24 +37,9 @@ export class AppComponent {
           accountFotoProfil: respon.foto,
         };
 
-        // Simpan ke variabel global AppComponent secara manual agar tidak tabrak dgn login
-        // const dataUserManual = {
-        //   email: respon.email,
-        //   password: respon.password,
-        //   nama: respon.nama,
-        //   gender: respon.gender,
-        //   alamat: respon.alamat,
-        //   tanggal_lahir: respon.tanggal_lahir,
-        //   foto: respon.foto,
-        // };
-
         alert('Berhasil Login');
         localStorage.setItem('logged', JSON.stringify(this.logged));
 
-        // this.userLoggedIn = dataUserManual;
-        // this.isLoginOpen = false;
-        // // Tetap simpan ke localStorage untuk backup jika refresh browser
-        // localStorage.setItem('user_login', JSON.stringify(dataUserManual));
       } else {
         alert('Gagal Login');
         this.logged = null;
@@ -85,8 +52,6 @@ export class AppComponent {
     this.pass = '';
     this.logged = null;
     localStorage.removeItem('logged');
-    // localStorage.removeItem('user_login');
-    // this.userLoggedIn = null;
   }
 
   // buat ambil foto dari regis

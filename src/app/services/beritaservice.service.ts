@@ -84,18 +84,6 @@ export class BeritaserviceService {
 
 //#endregion 
 //#region UPDATE BERITA
-  // updateRatingBerita(idBerita: number): Observable<any> {
-  //   const headers = new HttpHeaders({
-  //     'Content-Type': 'application/x-www-form-urlencoded',
-  //   });
-  //   const body = new URLSearchParams();
-  //   body.set('action', 'updateRatingBerita');
-  //   body.set('idBerita', idBerita.toString());
-  //   const urlEncodedData = body.toString();
-
-  //   return this.http.post(this.url, urlEncodedData, { headers });
-  // }
-
   updateRating(idBerita: number,rating: number,emailUser: string): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
