@@ -13,12 +13,22 @@ import { AlertController } from '@ionic/angular';
 export class SemuaBeritaPage implements OnInit {
   beritaSaya: any[] = [];
   daftarKategori: any[] = [];
-  // idUser: number = 1;
+  showForm = false;
+  isEditMode = false;
+  selectedPhotos: File[] = [];
+  mainPhotoFile: File | null = null;
+  removedPhotoIndices: number[] = [];
+  
+  // Preview URLs
+  mainPhotoPreview: string | null = null;
+  additionalPhotosPreviews: string[] = [];
 
   formBerita = {
+    id: 0,
     judul: '',
-    deskripsi: '', //isi_berita
-    foto: '',
+    deskripsi: '',
+    fotoUtama: '',
+    fotoList: [] as string[],
     kategori: [],
   };
 
@@ -45,7 +55,6 @@ export class SemuaBeritaPage implements OnInit {
   }
 
   loadBeritaSaya() {
-    // Ambil emailUser dari localStorage jika ada
     const logged = JSON.parse(localStorage.getItem('logged') || 'null');
     if (logged && logged.accountEmail) {
       this.beritaservice.getBeritaByUser(logged.accountEmail).subscribe((response) => {
@@ -58,24 +67,100 @@ export class SemuaBeritaPage implements OnInit {
     }
   }
 
-  // Pengecekan Judul Duplikat
-  async simpanBerita(modal: any) {
-    // 1. Cek apakah judul sudah ada di list (Poin 5)
-    const isExist = this.beritaSaya.some(
-      (b) => b.judul.toLowerCase() === this.formBerita.judul.toLowerCase()
-    );
-
-    if (isExist) {
-      const alert = await this.toastCtrl.create({
-        header: 'Error',
-        message: 'Judul berita sudah pernah dibuat!',
-        buttons: ['OK'],
-      });
-      await alert.present();
-      return;
+  toggleForm() {
+    this.showForm = !this.showForm;
+    if (!this.showForm) {
+      this.resetForm();
     }
+  }
 
-    // Validasi form
+  editBerita(berita: any) {
+    this.isEditMode = true;
+    this.showForm = true;
+
+    const logged = JSON.parse(localStorage.getItem('logged') || 'null');
+    const emailUser = logged?.accountEmail || '';
+    
+    // Load detail berita untuk dapat foto_list dan kategori
+    this.beritaservice.getDetailBerita(berita.id, emailUser).subscribe((response) => {
+      if (response.result === 'OK') {
+        const detail = response.data;
+        this.formBerita = {
+          id: berita.id,
+          judul: berita.judul,
+          deskripsi: berita.isi_berita || berita.isi || '',
+          fotoUtama: berita.foto,
+          fotoList: detail.foto_list || [berita.foto],
+          kategori: detail.kategori_ids || [],
+        };
+      } else {
+        // Fallback jika detail gagal
+        this.formBerita = {
+          id: berita.id,
+          judul: berita.judul,
+          deskripsi: berita.isi_berita || berita.isi || '',
+          fotoUtama: berita.foto,
+          fotoList: [berita.foto],
+          kategori: [],
+        };
+      }
+    });
+    
+    this.selectedPhotos = [];
+    this.removedPhotoIndices = [];
+    this.mainPhotoFile = null;
+    this.mainPhotoPreview = null;
+    this.additionalPhotosPreviews = [];
+  }
+
+  onMainPhotoSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.mainPhotoFile = file;
+      console.log(`Main photo selected: ${file.name} (${(file.size/1024).toFixed(2)}KB)`);
+      
+      // Generate preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.mainPhotoPreview = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  onAdditionalPhotosSelected(event: any) {
+    const files = Array.from(event.target.files) as File[];
+    
+    this.selectedPhotos = [...this.selectedPhotos, ...files];
+    console.log(`Added ${files.length} photos`);
+    
+    // Generate previews
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.additionalPhotosPreviews.push(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  removePhoto(index: number, isExisting: boolean = false) {
+    if (isExisting) {
+      // Remove existing photo
+      if (!this.removedPhotoIndices.includes(index)) {
+        this.removedPhotoIndices.push(index);
+      }
+      // Hapus dari fotoList untuk display
+      this.formBerita.fotoList = this.formBerita.fotoList.filter((_, i) => i === 0 || !this.removedPhotoIndices.includes(i));
+    } else {
+      // Remove newly selected photo
+      this.selectedPhotos.splice(index, 1);
+      this.additionalPhotosPreviews.splice(index, 1);
+    }
+  }
+
+  async simpanBerita() {
+    // Validasi
     if (!this.formBerita.judul || !this.formBerita.deskripsi) {
       const alert = await this.toastCtrl.create({
         header: 'Error',
@@ -86,7 +171,33 @@ export class SemuaBeritaPage implements OnInit {
       return;
     }
 
-    // 2. Ambil email dari logged user
+    // Cek duplikat judul (hanya saat buat baru)
+    if (!this.isEditMode) {
+      const isExist = this.beritaSaya.some(
+        (b) => b.judul.toLowerCase() === this.formBerita.judul.toLowerCase()
+      );
+      if (isExist) {
+        const alert = await this.toastCtrl.create({
+          header: 'Error',
+          message: 'Judul berita sudah pernah dibuat!',
+          buttons: ['OK'],
+        });
+        await alert.present();
+        return;
+      }
+    }
+
+    // Cek main photo
+    if (!this.isEditMode && !this.mainPhotoFile) {
+      const alert = await this.toastCtrl.create({
+        header: 'Error',
+        message: 'Foto utama harus dipilih!',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
+
     const logged = JSON.parse(localStorage.getItem('logged') || 'null');
     if (!logged || !logged.accountEmail) {
       const alert = await this.toastCtrl.create({
@@ -98,41 +209,110 @@ export class SemuaBeritaPage implements OnInit {
       return;
     }
 
-    // 3. Kirim ke Web Service dengan email penerbit
-    this.beritaservice.tambahBerita(
-      this.formBerita.judul,
-      this.formBerita.deskripsi,
-      this.formBerita.foto,
-      this.formBerita.kategori,
-      logged.accountEmail
-    ).subscribe(async (response) => {
+    // Prepare FormData untuk upload multiple foto
+    const formData = new FormData();
+    formData.append('action', this.isEditMode ? 'editBerita' : 'tambahBerita');
+    formData.append('judul', this.formBerita.judul);
+    formData.append('deskripsi', this.formBerita.deskripsi);
+    formData.append('emailPenerbit', logged.accountEmail);
+    formData.append('kategori', JSON.stringify(this.formBerita.kategori));
+
+    if (this.isEditMode) {
+      formData.append('id', this.formBerita.id.toString());
+      if (this.mainPhotoFile) {
+        formData.append('mainPhoto', this.mainPhotoFile);
+      }
+      formData.append('removedPhotoIndices', JSON.stringify(this.removedPhotoIndices));
+    } else {
+      formData.append('mainPhoto', this.mainPhotoFile!);
+    }
+
+    // Tambah foto tambahan
+    this.selectedPhotos.forEach((foto) => {
+      formData.append('additionalPhotos[]', foto);
+    });
+
+    // Validasi total ukuran FormData
+    let totalSize = 0;
+    formData.forEach((value) => {
+      if (value instanceof File) {
+        totalSize += value.size;
+      }
+    });
+    
+    console.log(`Total upload size: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
+    
+    if (totalSize > 5 * 1024 * 1024) { // Max 5MB total
+      const alert = await this.toastCtrl.create({
+        header: 'Error',
+        message: 'Total ukuran foto terlalu besar! Maksimal 5MB total. Silakan kurangi jumlah foto.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
+
+    // Debug: Log FormData contents
+    console.log('=== FormData Contents ===');
+    formData.forEach((value, key) => {
+      if (value instanceof File) {
+        console.log(key, ':', value.name, '(', value.size, 'bytes)');
+      } else {
+        console.log(key, ':', value);
+      }
+    });
+    console.log('========================');
+
+    // Kirim ke backend
+    console.log('Mengirim FormData ke backend...');
+    this.beritaservice.tambahBerita(formData).subscribe(async (response) => {
+      console.log('Response dari backend:', response);
       if (response.result === 'OK') {
         const alert = await this.toastCtrl.create({
           header: 'Berhasil',
-          message: 'Berita berhasil ditambahkan!',
+          message: this.isEditMode ? 'Berita berhasil diupdate!' : 'Berita berhasil ditambahkan!',
           buttons: ['OK'],
         });
         await alert.present();
-        
-        // Reload berita saya
+
         this.loadBeritaSaya();
-        
-        // 4. Close modal & reset form
-        modal.dismiss();
+        this.toggleForm();
         this.resetForm();
       } else {
         const alert = await this.toastCtrl.create({
           header: 'Error',
-          message: response.message || 'Gagal menambahkan berita',
+          message: response.message || 'Gagal menyimpan berita',
           buttons: ['OK'],
         });
         await alert.present();
       }
+    }, async (error) => {
+      console.error('Error saat upload:', error);
+      const errorMsg = error.error?.message || error.message || 'Terjadi kesalahan saat upload';
+      const alert = await this.toastCtrl.create({
+        header: 'Error',
+        message: errorMsg + ' (Cek console untuk detail)',
+        buttons: ['OK'],
+      });
+      await alert.present();
     });
   }
 
   resetForm() {
-    this.formBerita = { judul: '', deskripsi: '', foto: '', kategori: [] };
+    this.formBerita = {
+      id: 0,
+      judul: '',
+      deskripsi: '',
+      fotoUtama: '',
+      fotoList: [],
+      kategori: [],
+    };
+    this.selectedPhotos = [];
+    this.mainPhotoFile = null;
+    this.removedPhotoIndices = [];
+    this.isEditMode = false;
+    this.mainPhotoPreview = null;
+    this.additionalPhotosPreviews = [];
   }
 
   async hapusBerita(id: number) {

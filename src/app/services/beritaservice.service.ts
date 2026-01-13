@@ -138,26 +138,18 @@ export class BeritaserviceService {
 
 //#endregion
 //#region TAMBAH & HAPUS BERITA
-  tambahBerita(
-    judul: string,
-    deskripsi: string,
-    foto: string,
-    kategori: string[],
-    emailPenerbit: string
-  ): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/x-www-form-urlencoded',
-    });
-    const body = new URLSearchParams();
-    body.set('action', 'tambahBerita');
-    body.set('judul', judul);
-    body.set('deskripsi', deskripsi);
-    body.set('foto', foto);
-    body.set('kategori', JSON.stringify(kategori));
-    body.set('emailPenerbit', emailPenerbit);
-    const urlEncodedData = body.toString();
-
-    return this.http.post(this.url, urlEncodedData, { headers });
+  tambahBerita(data: FormData | any): Observable<any> {
+    // Handle both FormData (multiple photos) dan URLSearchParams (simple text)
+    if (data instanceof FormData) {
+      // FormData: untuk multi-photo upload, browser otomatis set Content-Type dengan boundary
+      return this.http.post(this.url, data);
+    } else {
+      // URLSearchParams: untuk legacy compatibility (jika diperlukan)
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/x-www-form-urlencoded',
+      });
+      return this.http.post(this.url, data, { headers });
+    }
   }
 
   hapusBerita(idBerita: number): Observable<any> {

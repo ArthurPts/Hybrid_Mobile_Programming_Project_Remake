@@ -1,10 +1,14 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Berita Saya</ion-title>
+    <ion-button fill="clear" color="primary" (click)="toggleForm()" slot="end" *ngIf="!showForm">
+      <ion-icon name="add-circle"></ion-icon> Buat Baru
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<!-- List Berita Saya -->
+<ion-content class="ion-padding" *ngIf="!showForm">
   <ion-list>
     <ion-list-header>
       <ion-label>Daftar Berita Anda</ion-label>
@@ -20,58 +24,131 @@
           <p>{{ b.kategori_names || 'Tanpa Kategori' }}</p>
         </ion-label>
       </ion-item>
+      <ion-button fill="clear" color="primary" (click)="editBerita(b)" slot="end">
+        <ion-icon name="pencil"></ion-icon>
+      </ion-button>
       <ion-button fill="clear" color="danger" (click)="hapusBerita(b.id)" slot="end">
         <ion-icon name="trash"></ion-icon>
       </ion-button>
     </ion-item>
   </ion-list>
+</ion-content>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed"> <!--//!  PAHAMI SENDIRI SAMPE BAWAH -->
-    <ion-fab-button id="open-modal-tambah">
-      <ion-icon name="add"></ion-icon>
-    </ion-fab-button>
-  </ion-fab>
+<!-- Form Buat/Edit Berita -->
+<ion-content class="ion-padding" *ngIf="showForm">
+  <ion-grid fixed>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="12" size-md="8">
+        <div class="form-container ion-padding">
+          <div class="header ion-margin-bottom">
+            <h1>{{ isEditMode ? 'Edit Berita' : 'Buat Berita Baru' }}</h1>
+          </div>
 
-  <ion-modal trigger="open-modal-tambah" #modal> 
-    <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>Buat Berita Baru</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="modal.dismiss()">Batal</ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
+          <form (ngSubmit)="simpanBerita()">
+            <ion-item>
+              <ion-label position="stacked">Judul Berita</ion-label>
+              <ion-input 
+                [(ngModel)]="formBerita.judul" 
+                name="judul"
+                placeholder="Masukkan judul"
+                required>
+              </ion-input>
+            </ion-item>
 
-      <ion-content class="ion-padding">
-        <ion-item>
-          <ion-label position="stacked">Judul Berita</ion-label>
-          <ion-input [(ngModel)]="formBerita.judul" placeholder="Masukkan judul"></ion-input>
-        </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Deskripsi / Isi Berita</ion-label>
+              <ion-textarea 
+                [(ngModel)]="formBerita.deskripsi" 
+                name="deskripsi"
+                rows="5"
+                required>
+              </ion-textarea>
+            </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Deskripsi / Isi Berita</ion-label>
-          <ion-textarea [(ngModel)]="formBerita.deskripsi" rows="4"></ion-textarea>
-        </ion-item>
+            <ion-item>
+              <ion-label position="stacked">Foto Utama</ion-label>
+              <input 
+                type="file" 
+                accept="image/*" 
+                (change)="onMainPhotoSelected($event)"
+                name="mainPhoto"
+                #mainPhotoInput
+                [required]="!isEditMode">
+            </ion-item>
+            
+            <!-- Preview Foto Utama -->
+            <div *ngIf="mainPhotoPreview" class="ion-margin-top">
+              <img [src]="mainPhotoPreview" style="max-width: 200px; max-height: 200px; object-fit: contain;" />
+            </div>
+            <div *ngIf="isEditMode && formBerita.fotoUtama && !mainPhotoPreview" class="ion-margin-top">
+              <p>Foto saat ini:</p>
+              <img [src]="formBerita.fotoUtama" style="max-width: 200px; max-height: 200px; object-fit: contain;" />
+            </div>
 
-        <ion-item>
-          <ion-label position="stacked">URL Foto</ion-label>
-          <ion-input [(ngModel)]="formBerita.foto" placeholder="nama_file.jpg"></ion-input> <!--//!  UBAH AGAR BISA MASUKIN BANYAK FOTO, DAN JANGAN PAKE TEKS, PAKE FILE -->
-        </ion-item>
+            <!-- Foto Tambahan -->
+            <ion-item>
+              <ion-label position="stacked">Foto Tambahan</ion-label>
+              <input 
+                type="file" 
+                accept="image/*" 
+                multiple
+                (change)="onAdditionalPhotosSelected($event)"
+                name="additionalPhotos"
+                #additionalPhotosInput>
+            </ion-item>
 
-        <ion-item>
-          <ion-label>Kategori (Pilih banyak)</ion-label>
-          <ion-select [(ngModel)]="formBerita.kategori" multiple="true">
-            <ion-select-option *ngFor="let k of daftarKategori" [value]="k.id">
-              {{ k.nama }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
+            <!-- Preview Foto Tambahan -->
+            <div *ngIf="additionalPhotosPreviews.length > 0" class="ion-margin-top ion-margin-bottom">
+              <h3>Preview Foto Tambahan:</h3>
+              <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <div *ngFor="let preview of additionalPhotosPreviews; let i = index" style="position: relative;">
+                  <img [src]="preview" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;" />
+                  <ion-icon 
+                    name="close-circle" 
+                    (click)="removePhoto(i)"
+                    style="position: absolute; top: -5px; right: -5px; font-size: 24px; color: red; cursor: pointer;">
+                  </ion-icon>
+                </div>
+              </div>
+            </div>
 
-        <ion-button expand="block" class="ion-margin-top" (click)="simpanBerita(modal)">
-          Simpan Berita
-        </ion-button>
-      </ion-content>
-    </ng-template>
-  </ion-modal>
+            <!-- List Foto existing (saat edit) -->
+            <div *ngIf="isEditMode && formBerita.fotoList && formBerita.fotoList.length > 1" class="ion-margin-top ion-margin-bottom">
+              <h3>Foto yang ada:</h3>
+              <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <div *ngFor="let f of formBerita.fotoList.slice(1); let i = index" style="position: relative;">
+                  <img [src]="f" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;" />
+                  <ion-icon 
+                    name="close-circle" 
+                    (click)="removePhoto(i + 1, true)"
+                    style="position: absolute; top: -5px; right: -5px; font-size: 24px; color: red; cursor: pointer; background: white; border-radius: 50%;">
+                  </ion-icon>
+                </div>
+              </div>
+            </div>
+
+            <!-- Kategori -->
+            <ion-item>
+              <ion-label>Kategori</ion-label>
+              <ion-select [(ngModel)]="formBerita.kategori" name="kategori" multiple="true">
+                <ion-select-option *ngFor="let k of daftarKategori" [value]="k.id">
+                  {{ k.nama }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <!-- Buttons -->
+            <div class="ion-margin-top">
+              <ion-button expand="block" color="primary" type="submit">
+                {{ isEditMode ? 'Update Berita' : 'Simpan Berita' }}
+              </ion-button>
+              <ion-button expand="block" color="medium" type="button" (click)="toggleForm()">
+                Batal
+              </ion-button>
+            </div>
+          </form>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
