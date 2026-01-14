@@ -88,7 +88,7 @@ export class SemuaBeritaPage implements OnInit {
         this.formBerita = {
           id: berita.id,
           judul: berita.judul,
-          deskripsi: berita.isi_berita || berita.isi || '',
+          deskripsi: berita.isi_berita || '',
           fotoUtama: berita.foto,
           fotoList: detail.foto_list || [berita.foto],
           kategori: detail.kategori_ids || [],
@@ -98,7 +98,7 @@ export class SemuaBeritaPage implements OnInit {
         this.formBerita = {
           id: berita.id,
           judul: berita.judul,
-          deskripsi: berita.isi_berita || berita.isi || '',
+          deskripsi: berita.isi_berita || '',
           fotoUtama: berita.foto,
           fotoList: [berita.foto],
           kategori: [],
