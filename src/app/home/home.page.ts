@@ -69,6 +69,15 @@ export class HomePage {
     });
   }
 
+  loadRekomendasiBerita() {
+    this.beritaservice.getBeritaByRekomendasi().subscribe((response) => {
+      if (response.result === 'OK') {
+        this.semuaBerita = response.data;
+        this.hasilPencarian = [...this.semuaBerita];
+      }
+    });
+  }
+
   // Fungsi ini dijalankan saat user mengklik salah satu tab
   pilihKategori(id: any) {
     this.jenisTampilan = id;
@@ -82,7 +91,7 @@ export class HomePage {
 
   ngOnInit() {
     this.loadCategories();
-    this.loadAllBerita();
+    this.loadRekomendasiBerita();
     this.jenisTampilan = 0;
   }
 

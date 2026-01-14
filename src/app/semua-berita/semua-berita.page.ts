@@ -146,14 +146,14 @@ export class SemuaBeritaPage implements OnInit {
 
   removePhoto(index: number, isExisting: boolean = false) {
     if (isExisting) {
-      // Remove existing photo
+      // hapus photo
       if (!this.removedPhotoIndices.includes(index)) {
         this.removedPhotoIndices.push(index);
       }
       // Hapus dari fotoList untuk display
       this.formBerita.fotoList = this.formBerita.fotoList.filter((_, i) => i === 0 || !this.removedPhotoIndices.includes(i));
     } else {
-      // Remove newly selected photo
+      // hapus foto yg baru dipilih
       this.selectedPhotos.splice(index, 1);
       this.additionalPhotosPreviews.splice(index, 1);
     }
@@ -232,41 +232,8 @@ export class SemuaBeritaPage implements OnInit {
       formData.append('additionalPhotos[]', foto);
     });
 
-    // Validasi total ukuran FormData
-    let totalSize = 0;
-    formData.forEach((value) => {
-      if (value instanceof File) {
-        totalSize += value.size;
-      }
-    });
-    
-    console.log(`Total upload size: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
-    
-    if (totalSize > 5 * 1024 * 1024) { // Max 5MB total
-      const alert = await this.toastCtrl.create({
-        header: 'Error',
-        message: 'Total ukuran foto terlalu besar! Maksimal 5MB total. Silakan kurangi jumlah foto.',
-        buttons: ['OK'],
-      });
-      await alert.present();
-      return;
-    }
-
-    // Debug: Log FormData contents
-    console.log('=== FormData Contents ===');
-    formData.forEach((value, key) => {
-      if (value instanceof File) {
-        console.log(key, ':', value.name, '(', value.size, 'bytes)');
-      } else {
-        console.log(key, ':', value);
-      }
-    });
-    console.log('========================');
-
     // Kirim ke backend
-    console.log('Mengirim FormData ke backend...');
     this.beritaservice.tambahBerita(formData).subscribe(async (response) => {
-      console.log('Response dari backend:', response);
       if (response.result === 'OK') {
         const alert = await this.toastCtrl.create({
           header: 'Berhasil',

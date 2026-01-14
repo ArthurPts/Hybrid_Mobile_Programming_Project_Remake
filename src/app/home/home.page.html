@@ -18,9 +18,14 @@
         [scrollable]="true"
         style="flex: 1"
       >
+        <ion-segment-button value="0" (click)="loadRekomendasiBerita()">
+          <ion-label style="color: white">Rekomendasi</ion-label>
+        </ion-segment-button>
+        
         <ion-segment-button value="0" (click)="loadAllBerita()">
           <ion-label style="color: white">Semua</ion-label>
         </ion-segment-button>
+
         <ion-segment-button
           *ngFor="let kat of categories"
           [value]="kat.id"

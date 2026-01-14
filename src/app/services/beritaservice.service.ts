@@ -71,7 +71,7 @@ export class BeritaserviceService {
     return this.http.post(this.url, urlEncodedData, { headers });
   }
 
-  loadRekomendasiBerita(): Observable<any> {
+  getBeritaByRekomendasi(): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
     });
@@ -139,12 +139,9 @@ export class BeritaserviceService {
 //#endregion
 //#region TAMBAH & HAPUS BERITA
   tambahBerita(data: FormData | any): Observable<any> {
-    // Handle both FormData (multiple photos) dan URLSearchParams (simple text)
     if (data instanceof FormData) {
-      // FormData: untuk multi-photo upload, browser otomatis set Content-Type dengan boundary
       return this.http.post(this.url, data);
     } else {
-      // URLSearchParams: untuk legacy compatibility (jika diperlukan)
       const headers = new HttpHeaders({
         'Content-Type': 'application/x-www-form-urlencoded',
       });
@@ -189,7 +186,7 @@ export class BeritaserviceService {
 
   deleteKategori(id: any) {
     const body = new URLSearchParams();
-    body.set('action', 'deleteKategori'); // Sesuaikan dengan yang ada di PHP
+    body.set('action', 'deleteKategori'); 
     body.set('id', id);
 
     const headers = { 'Content-Type': 'application/x-www-form-urlencoded' };

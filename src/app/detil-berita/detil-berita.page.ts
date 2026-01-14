@@ -30,7 +30,7 @@ export class DetilBeritaPage implements OnInit {
 
   ngOnInit() {
     // Ambil ID dari parameter URL (idBerita sesuai routing)
-    const idParam = this.route.snapshot.paramMap.get('idBerita'); //! BLM DIPAHAMI
+    const idParam = this.route.snapshot.paramMap.get('idBerita');
     this.id = Number(idParam) || 0;
     
     const user = JSON.parse(localStorage.getItem('logged') || '{}');
@@ -54,7 +54,7 @@ export class DetilBeritaPage implements OnInit {
         // Pastikan foto utama tetap tampil walau foto_list kosong
         this.fotoList = res.data.foto_list && res.data.foto_list.length
           ? res.data.foto_list
-          : [res.data.foto].filter(Boolean); //! DIPELAJARI SENDIRI
+          : [res.data.foto].filter(Boolean);
         
       }
     });
@@ -91,7 +91,7 @@ export class DetilBeritaPage implements OnInit {
   loadComments() { 
     this.beritaservice.getKomentarBerita(this.id).subscribe((res: any) => {
       if (res.result === 'OK') {
-        this.comments = res.data.map((c: any) => ({ //! DIPELAJARI SENDIRI
+        this.comments = res.data.map((c: any) => ({
           komenID: c.id,
           userName: c.nama_user ,
           userPhoto: c.foto_user || '',

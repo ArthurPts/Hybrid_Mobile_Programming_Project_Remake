@@ -68,6 +68,17 @@ export class AppComponent {
       alert('Password dan konfirmasi tidak sama!');
       return;
     }
+
+    if (this.pass.length < 8) {
+      alert('Password minimal 8 karakter!');
+      return;
+    }
+
+    if (!this.nama.match(/^(?!\d+$).+$/)) {
+      alert('Nama tidak boleh hanya berisi angka!');
+      return;
+    }
+
     // Buat objek data dari variabel yang di-bind di form
     const akunBaru: Akun = {
       accountEmail: this.email,
